@@ -1,0 +1,9 @@
+[project]
+name = "esp32"
+version = "0.1.0"
+description = "Encryption & Security Platform 32"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.10.3",
+]
