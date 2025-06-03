@@ -2,18 +2,22 @@ from .sm4_cipher import SM4
 from .sm3_cipher import SM3
 from datetime import datetime
 
-IV = b'0123456789012345'
-KEY = b'0123456789012345'
-MAGIC_HEADER = b'NPUSECENC001'
+IV = b"0123456789012345"
+KEY = b"0123456789012345"
+MAGIC_HEADER = b"NPUSECENC001"
 HASH_SIZE = 32
-LOG_PATH = "secure_editor.log"
+LOG_PATH = "./log/secure_editor.log"
+
 
 def write_log(action: str, filepath: str, result: str):
-    with open(LOG_PATH, 'a', encoding='utf-8') as f:
-        f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {action} | 文件: {filepath} | 结果: {result}\n")
+    with open(LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(
+            f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {action} | 文件: {filepath} | 结果: {result}\n"
+        )
+
 
 def load_file(file_path: str) -> str:
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         raw = f.read()
 
     if not raw.startswith(MAGIC_HEADER):
@@ -22,7 +26,7 @@ def load_file(file_path: str) -> str:
     if len(raw) < len(MAGIC_HEADER) + HASH_SIZE + 16:
         raise ValueError("文件结构异常")
 
-    encrypted_data = raw[len(MAGIC_HEADER):-HASH_SIZE]
+    encrypted_data = raw[len(MAGIC_HEADER) : -HASH_SIZE]
     hash_stored = raw[-HASH_SIZE:]
 
     expected_length = len(MAGIC_HEADER) + len(encrypted_data) + HASH_SIZE
@@ -41,17 +45,18 @@ def load_file(file_path: str) -> str:
         raise ValueError("文件被篡改（哈希校验失败）")
 
     try:
-        return decrypted.decode('utf-8')
+        return decrypted.decode("utf-8")
     except Exception:
         raise ValueError("文件内容解码失败（可能被破坏）")
 
+
 def save_file(file_path: str, plaintext: str):
-    data = plaintext.encode('utf-8')
+    data = plaintext.encode("utf-8")
     cipher = SM4(iv=IV, key=KEY)
     encrypted = cipher.encrypt(data)
 
     sm3 = SM3()
     hash_value = sm3.hash(data)
 
-    with open(file_path, 'wb') as f:
+    with open(file_path, "wb") as f:
         f.write(MAGIC_HEADER + encrypted + hash_value)

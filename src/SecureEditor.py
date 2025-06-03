@@ -1,22 +1,20 @@
-# src/widget/secure_editor_tab.py
 import os, sys
 from typing import Optional
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
     QFileDialog,
-    QMessageBox,
 )
-
+from PyQt5.QtCore import Qt
 from qfluentwidgets import (
     TitleLabel,
-    StrongBodyLabel,
-    LineEdit,
-    PushButton,
-    FluentIcon,
-    PrimaryPushButton,
     TextEdit,
+    FluentIcon,
+    Action,
+    CommandBar,
+    Flyout,
+    InfoBarIcon,
+    FlyoutAnimationType,
     MessageBox,
 )
 
@@ -29,47 +27,106 @@ class SecureEditorTab(QWidget):
     def __init__(self):
         super().__init__()
         self.setObjectName("SecureEditorTab")
-        self.current_file: Optional[str] = None
-
+        self.TitleLabel = TitleLabel("文档透明加密编辑器")
         self.text_edit = TextEdit(self)
         self.text_edit.setReadOnly(True)
 
-        self.btn_unlock = PushButton("编辑解锁", self)
-        self.btn_unlock.setEnabled(False)
-        self.btn_unlock.clicked.connect(self.unlock_edit)
+        self.commandBar = CommandBar()
+        self.commandBar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
-        self.btn_open = PushButton(FluentIcon.FOLDER, "打开文件", self)
-        self.btn_open.setToolTip("打开文件")
-        self.btn_open.clicked.connect(self.open_file)
+        # 初始化命令栏按钮并保存引用
+        self.action_new = Action(
+            FluentIcon.ADD, "新建文件", triggered=self.new_file
+        )  # 新增
+        self.action_open = Action(
+            FluentIcon.FOLDER, "打开文件", triggered=self.open_file
+        )
+        self.action_unlock = Action(
+            FluentIcon.VIEW, "解锁文件", triggered=self.unlock_edit
+        )
+        self.action_save = Action(FluentIcon.SAVE, "保存文件", triggered=self.save_file)
+        self.action_export = Action(
+            FluentIcon.SAVE_AS, "导出文件", triggered=self.export_file
+        )
 
-        self.btn_save = PushButton(FluentIcon.SAVE, "保存文件", self)
-        self.btn_save.setToolTip("保存并加密")
-        self.btn_save.clicked.connect(self.save_file)
+        self.commandBar.addAction(self.action_new)  # 新增按钮添加顺序
+        self.commandBar.addAction(self.action_open)
+        self.commandBar.addSeparator()
+        self.commandBar.addAction(self.action_unlock)
+        self.commandBar.addSeparator()
+        self.commandBar.addAction(self.action_save)
+        self.commandBar.addAction(self.action_export)
+        self.commandBar.addSeparator()
 
-        bar = QHBoxLayout()
-        bar.setSpacing(6)
-        bar.addWidget(self.btn_open)
-        bar.addWidget(self.btn_save)
-        bar.addStretch()
-        bar.addWidget(self.btn_unlock)
+        # 初始按钮状态
+        self.action_unlock.setEnabled(False)
+        self.action_save.setEnabled(False)
+        self.action_export.setEnabled(False)
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(10, 10, 10, 10)
-        lay.setSpacing(8)
-        lay.addLayout(bar)
+        lay.setAlignment(Qt.AlignTop)
+        lay.addWidget(self.TitleLabel)
+        lay.addWidget(self.commandBar)
         lay.addWidget(self.text_edit, 1)
 
-    # ----- 业务 -----
-    def open_file(self):
-        path, _ = QFileDialog.getOpenFileName(self, "打开文件")
+        self.current_file: Optional[str] = None
+
+    # ----- 新增 新建文件逻辑 -----
+    def new_file(self):
+        # 弹出“保存为”对话框，默认后缀txt
+        path, _ = QFileDialog.getSaveFileName(
+            self, "新建文件", "", "文本文件 (*.txt);;"
+        )
         if not path:
             return
-        self.current_file = path
+        # 确保文件有txt后缀
+        if not path.endswith(".txt"):
+            path += ".txt"
+
+        # 创建空白文件
         try:
-            core.load_file(path)  # 仅验证
+            with open(path, "w", encoding="utf-8") as f:
+                pass  # 创建空文件
+        except Exception as e:
+            self._err("新建文件失败", f"无法创建文件：{e}")
+            return
+
+        self.current_file = path
+        self.text_edit.clear()  # 清空文本编辑器
+        self.text_edit.setReadOnly(False)  # 进入编辑状态
+
+        # 按钮状态调整
+        self.action_unlock.setEnabled(False)  # 新文件无需解锁
+        self.action_save.setEnabled(True)  # 可保存
+        self.action_export.setEnabled(False)  # 导出不可用（没加密文件）
+
+        Flyout.create(
+            icon=InfoBarIcon.SUCCESS,
+            title="新建文件",
+            content=f"文件已创建：{os.path.basename(self.current_file)}",
+            target=self.commandBar,
+            parent=self,
+            isClosable=True,
+            aniType=FlyoutAnimationType.DROP_DOWN,
+        )
+        core.write_log("新建文件", path, "成功")
+
+    # 下面是已有方法，保持不变
+    def open_file(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "打开文件", "", "受控文件 (*.sec);;文本文件 (*.txt)"
+        )
+        if not path:
+            return
+
+        self.current_file = path
+        self.action_export.setEnabled(False)  # 禁用导出按钮（直到解锁）
+        try:
+            core.load_file(path)  # 验证合法性
             self.text_edit.setPlainText("受控文件已加载，点击“编辑解锁”以查看明文")
             self.text_edit.setReadOnly(True)
-            self.btn_unlock.setEnabled(True)
+            self.action_unlock.setEnabled(True)
             core.write_log("打开文件", path, "成功")
         except ValueError as ve:
             self._handle_open_error(path, ve)
@@ -83,35 +140,95 @@ class SecureEditorTab(QWidget):
             txt = core.load_file(self.current_file)
             self.text_edit.setPlainText(txt)
             self.text_edit.setReadOnly(False)
-            self.btn_unlock.setEnabled(False)
-            MessageBox("成功", "文件已解锁，可编辑", self).exec()
+            self.action_unlock.setEnabled(False)
+            self.action_save.setEnabled(True)
+            self.action_export.setEnabled(True)  # 解锁后允许导出
+
+            Flyout.create(
+                icon=InfoBarIcon.SUCCESS,
+                title="解锁成功",
+                content="文件已解锁，可编辑。",
+                target=self.commandBar,
+                parent=self,
+                isClosable=True,
+                aniType=FlyoutAnimationType.DROP_DOWN,
+            )
             core.write_log("解锁编辑", self.current_file, "成功")
         except Exception as e:
             self._err("解锁失败", str(e))
 
     def save_file(self):
         if not self.current_file:
-            p, _ = QFileDialog.getSaveFileName(self, "保存文件")
-            if not p:
-                return
-            self.current_file = p
+            return
+
+        # 自动添加 .sec 后缀（如果没有）
+        if not self.current_file.endswith(".sec"):
+            new_path = self.current_file + ".sec"
+        else:
+            new_path = self.current_file
+
         try:
-            core.save_file(self.current_file, self.text_edit.toPlainText())
+            core.save_file(new_path, self.text_edit.toPlainText())
+
+            # 删除原始文件（如果是另一个）
+            if new_path != self.current_file and os.path.exists(self.current_file):
+                os.remove(self.current_file)
+
+            self.current_file = new_path
             self.text_edit.setReadOnly(True)
-            self.btn_unlock.setEnabled(True)
-            box = MessageBox("保存成功", "文件已加密保存", self).exec()
-            box.yesButton.setText("是")
-            box.cancelButton.setText("否")
-            core.write_log("保存并加密", self.current_file, "成功")
+            self.action_unlock.setEnabled(False)
+            self.action_save.setEnabled(False)
+            self.action_export.setEnabled(False)
+            self.text_edit.clear()
+
+            Flyout.create(
+                icon=InfoBarIcon.SUCCESS,
+                title="保存成功",
+                content=f"文件已保存为：{os.path.basename(new_path)}",
+                target=self.commandBar,
+                parent=self,
+                isClosable=True,
+                aniType=FlyoutAnimationType.DROP_DOWN,
+            )
+            core.write_log("保存并加密", new_path, "成功")
+
         except Exception as e:
             self._err("保存失败", str(e))
+
+    def export_file(self):
+        if not self.current_file or self.text_edit.isReadOnly():
+            return
+
+        # 去掉 .sec 后缀
+        if self.current_file.endswith(".sec"):
+            export_path = self.current_file[:-4]
+        else:
+            export_path = self.current_file + ".export.txt"
+
+        try:
+            with open(export_path, "w", encoding="utf-8") as f:
+                f.write(self.text_edit.toPlainText())
+
+            Flyout.create(
+                icon=InfoBarIcon.SUCCESS,
+                title="导出成功",
+                content=f"明文已导出为：{os.path.basename(export_path)}",
+                target=self.commandBar,
+                parent=self,
+                isClosable=True,
+                aniType=FlyoutAnimationType.DROP_DOWN,
+            )
+            core.write_log("导出明文", export_path, "成功")
+        except Exception as e:
+            self._err("导出失败", str(e))
 
     def _handle_open_error(self, path: str, ve: ValueError):
         msg = str(ve)
         if "篡改" in msg:
-            box = MessageBox("警告", msg, self).exec()
+            box = MessageBox("警告", msg, self)
             box.yesButton.setText("是")
             box.cancelButton.setText("否")
+            box.exec()
         elif "不是受控文件" in msg:
             box = MessageBox("提示", "识别失败，作为新建文件打开？", self)
             box.yesButton.setText("是")
@@ -119,20 +236,40 @@ class SecureEditorTab(QWidget):
             if box.exec():
                 self.text_edit.clear()
                 self.text_edit.setReadOnly(False)
-                self.btn_unlock.setEnabled(False)
+                self.action_unlock.setEnabled(False)
+                self.action_save.setEnabled(True)
                 return
         else:
-            box = MessageBox("错误", msg, self).exec()
+            box = MessageBox("错误", msg, self)
             box.yesButton.setText("是")
             box.cancelButton.setText("否")
+            box.exec()
         core.write_log("打开文件", path, f"失败（{msg}）")
 
-    def _err(self, title: str, detail: str):
-        MessageBox(title, detail, self).exec()
-        if self.current_file:
-            core.write_log(title, self.current_file, f"失败（{detail}）")
+    def _err(self, title: str, content: str):
+        Flyout.create(
+            icon=InfoBarIcon.ERROR,
+            title=title,
+            content=content,
+            target=self.commandBar,
+            parent=self,
+            isClosable=True,
+            aniType=FlyoutAnimationType.DROP_DOWN,
+        )
 
-    def _err(self, title: str, detail: str):
-        QMessageBox.critical(self, title, detail)
-        if self.current_file:
-            core.write_log(title, self.current_file, f"失败（{detail}）")
+
+if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtGui import QFont
+
+    app = QApplication(sys.argv)
+    app.setFont(QFont("Microsoft YaHei UI", 12))
+    main_window = QMainWindow()
+    main_window.setWindowTitle("Secure Editor")
+    main_window.setGeometry(100, 100, 800, 600)
+
+    editor_tab = SecureEditorTab()
+    main_window.setCentralWidget(editor_tab)
+
+    main_window.show()
+    sys.exit(app.exec_())
