@@ -115,7 +115,7 @@ class SecureEditorTab(QWidget):
     # 下面是已有方法，保持不变
     def open_file(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "打开文件", "", "受控文件 (*.sec);;文本文件 (*.txt)"
+            self, "打开文件", "", "受控文件 (*.sec);;"
         )
         if not path:
             return

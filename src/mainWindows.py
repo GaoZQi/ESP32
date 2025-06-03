@@ -78,8 +78,6 @@ if __name__ == "__main__":
         setTheme(Theme.AUTO)
 
     app = QApplication(sys.argv)
-    # app.setStyleSheet(QSSLoader.load_qss_files("../style"))
-    # font = QFont("Microsoft YaHei UI", 8)
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
