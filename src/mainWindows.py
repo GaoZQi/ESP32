@@ -20,9 +20,8 @@ from qframelesswindow.utils import getSystemAccentColor
 
 from DataHandle import DataHandleTab
 from DataMasking import DataMaskingTab
-from widget.secure_editor_tab import SecureEditorTab
+from SecureEditor import SecureEditorTab
 
-from mod.QSSLoader import QSSLoader
 from mod.Fluent3Icon import Fluent3Icon
 
 
@@ -36,6 +35,7 @@ class MainWindow(FluentWindow):
         self.navigationInterface.setExpandWidth(200)
         # 添加子界面
         self.data_tab = DataHandleTab()
+        # self.masking_tab = DataMaskingTab()
         self.masking_tab = DataMaskingTab()
         self.editor_tab = SecureEditorTab()
         self.addSubInterface(

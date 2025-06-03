@@ -1,22 +1,28 @@
 import sys
 import os
 
-from PyQt5.QtGui import QColor, QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
-    QLineEdit,
-    QPushButton,
-    QTextEdit,
     QFileDialog,
     QVBoxLayout,
     QHBoxLayout,
-    QLabel,
     QWidget,
 )
 from PyQt5.QtCore import QProcess
 
-from qfluentwidgets import TitleLabel
+from qfluentwidgets import (
+    TitleLabel,
+    StrongBodyLabel,
+    LineEdit,
+    PushButton,
+    FluentIcon,
+    PrimaryDropDownPushButton,
+    TextEdit,
+    RoundMenu,
+    Action,
+)
 
 
 class CLITab(QWidget):
@@ -28,32 +34,37 @@ class CLITab(QWidget):
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)
 
-        tip_label = QLabel("核心算法：" + algorithm_name)
-        tip_label.setObjectName("H2")
+        tip_label = StrongBodyLabel("核心算法：" + algorithm_name)
         layout.addWidget(tip_label)
         file_layout = QHBoxLayout()
         # 输入框：日志文件路径
-        log_path_input = QLineEdit()
+        log_path_input = LineEdit()
         log_path_input.setPlaceholderText("请输入待检测文件路径")
         log_path_input.setReadOnly(True)
         file_layout.addWidget(log_path_input)
 
         # 浏览按钮
-        browse_button = QPushButton("选择文件")
+        browse_button = PushButton(FluentIcon.FOLDER, "选择文件")
         browse_button.clicked.connect(lambda: self.browse_file(log_path_input))
         file_layout.addWidget(browse_button)
         layout.addLayout(file_layout)
         # 开始检测按钮（初始禁用）
-        start_button = QPushButton("开始检测")
-        start_button.setObjectName("OKButton")
+        start_button = PrimaryDropDownPushButton("选择操作")
         start_button.setEnabled(False)
+        # 创建菜单
+        menu = RoundMenu(parent=start_button)
+        menu.addAction(Action("加密", triggered=lambda: print("encode")))
+        menu.addAction(Action("解密", triggered=lambda: print("decode")))
+
+        # 添加菜单
+        start_button.setMenu(menu)
         start_button.clicked.connect(
             lambda: self.start_detection(script, log_path_input.text())
         )
-        layout.addWidget(start_button)
+        file_layout.addWidget(start_button)
 
         # 显示结果的文本框
-        result_display = QTextEdit()
+        result_display = TextEdit()
         result_display.setReadOnly(True)
         layout.addWidget(result_display)
 
@@ -123,11 +134,10 @@ class CLITab(QWidget):
 
 
 if __name__ == "__main__":
-    from mod.QSSLoader import QSSLoader
 
     app = QApplication(sys.argv)
     app.setFont(QFont("Microsoft YaHei UI", 12))
-    app.setStyleSheet(QSSLoader.load_qss_files("../../style"))
+
     main_window = QMainWindow()
     main_window.setWindowTitle("Data Mining and Attack Detection System")
     main_window.setGeometry(100, 100, 1650, 1000)

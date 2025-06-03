@@ -1,62 +1,56 @@
 import sys
 import os
 
-from PyQt5.QtGui import QColor, QFont
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
-    QLineEdit,
-    QPushButton,
-    QTextEdit,
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
+    QWidget,
 )
 from PyQt5.QtCore import QProcess
 
-sys.path.append("..")
-from widget.RoundWidget import RoundWidget
+from qfluentwidgets import (
+    TitleLabel,
+    StrongBodyLabel,
+    LineEdit,
+    FluentIcon,
+    PrimaryToolButton,
+    TextEdit,
+    FluentIcon,
+)
 
 
-class CLIInputTab(RoundWidget):
+class CLIInputTab(QWidget):
     def __init__(self, tab_name="Example", algorithm_name="Example", script=""):
         super().__init__()
-        self.setWindowTitle("数据挖掘与攻击检测展示系统 - 攻击检测")
-        self.setBackgroundColor(QColor(250, 250, 250, 200))
-        self.setRadius(10)
-        self.setBorder(QColor(238, 238, 238), 2)
-        self.setContentsMargins(5, 5, 5, 5)
 
         self.script = script
         self.process = None  # 保存 QProcess 实例
 
         layout = QVBoxLayout()
 
-        title_label = QLabel(tab_name)
-        title_label.setObjectName("H1")
+        title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)
 
-        tip_label = QLabel("核心算法：" + algorithm_name)
-        tip_label.setObjectName("H2")
+        tip_label = StrongBodyLabel("核心算法：" + algorithm_name)
         layout.addWidget(tip_label)
 
         # 显示结果的文本框
-        result_display = QTextEdit()
+        result_display = TextEdit()
         result_display.setReadOnly(True)
         layout.addWidget(result_display)
 
         file_layout = QHBoxLayout()
         # 输入框
-        log_path_input = QLineEdit()
+        log_path_input = LineEdit()
         log_path_input.setPlaceholderText("请输入文本")
         file_layout.addWidget(log_path_input)
 
         # 开始检测按钮（初始禁用）
-        start_button = QPushButton("\uf0ad")
-        start_button.setFont(QFont("Segoe Fluent Icons", 10))
-        start_button.setStyleSheet("padding: 0px;")
-        start_button.setFixedSize(30, 30)
-        start_button.setObjectName("OKButton")
+        start_button = PrimaryToolButton(FluentIcon.PLAY)
         start_button.setEnabled(False)
         start_button.clicked.connect(self.on_start_clicked)
         file_layout.addWidget(start_button)

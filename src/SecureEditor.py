@@ -5,34 +5,44 @@ from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QTextEdit,
-    QPushButton,
     QFileDialog,
     QMessageBox,
 )
-import src.algorithms.SecureEditor.secure_core as core
+
+from qfluentwidgets import (
+    TitleLabel,
+    StrongBodyLabel,
+    LineEdit,
+    PushButton,
+    FluentIcon,
+    PrimaryPushButton,
+    TextEdit,
+    MessageBox,
+)
+
+import algorithms.SecureEditor.secure_core as core
 
 
 class SecureEditorTab(QWidget):
     """轻量版 – 可直接嵌入原前端。"""
 
-    def __init__(self, parent: Optional[QWidget] = None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self.setObjectName("SecureEditorTab")
         self.current_file: Optional[str] = None
 
-        self.text_edit = QTextEdit(self)
+        self.text_edit = TextEdit(self)
         self.text_edit.setReadOnly(True)
 
-        self.btn_unlock = QPushButton("编辑解锁", self)
+        self.btn_unlock = PushButton("编辑解锁", self)
         self.btn_unlock.setEnabled(False)
         self.btn_unlock.clicked.connect(self.unlock_edit)
 
-        self.btn_open = QPushButton("📂", self)
+        self.btn_open = PushButton(FluentIcon.FOLDER, "打开文件", self)
         self.btn_open.setToolTip("打开文件")
         self.btn_open.clicked.connect(self.open_file)
 
-        self.btn_save = QPushButton("💾", self)
+        self.btn_save = PushButton(FluentIcon.SAVE, "保存文件", self)
         self.btn_save.setToolTip("保存并加密")
         self.btn_save.clicked.connect(self.save_file)
 
@@ -74,7 +84,7 @@ class SecureEditorTab(QWidget):
             self.text_edit.setPlainText(txt)
             self.text_edit.setReadOnly(False)
             self.btn_unlock.setEnabled(False)
-            QMessageBox.information(self, "成功", "文件已解锁，可编辑")
+            MessageBox("成功", "文件已解锁，可编辑", self).exec()
             core.write_log("解锁编辑", self.current_file, "成功")
         except Exception as e:
             self._err("解锁失败", str(e))
@@ -89,33 +99,38 @@ class SecureEditorTab(QWidget):
             core.save_file(self.current_file, self.text_edit.toPlainText())
             self.text_edit.setReadOnly(True)
             self.btn_unlock.setEnabled(True)
-            QMessageBox.information(self, "保存成功", "文件已加密保存")
+            box = MessageBox("保存成功", "文件已加密保存", self).exec()
+            box.yesButton.setText("是")
+            box.cancelButton.setText("否")
             core.write_log("保存并加密", self.current_file, "成功")
         except Exception as e:
             self._err("保存失败", str(e))
 
-    # ----- 辅助 -----
     def _handle_open_error(self, path: str, ve: ValueError):
         msg = str(ve)
         if "篡改" in msg:
-            QMessageBox.critical(self, "警告", msg)
+            box = MessageBox("警告", msg, self).exec()
+            box.yesButton.setText("是")
+            box.cancelButton.setText("否")
         elif "不是受控文件" in msg:
-            if (
-                QMessageBox.question(
-                    self,
-                    "提示",
-                    "识别失败，作为新建文件打开？",
-                    QMessageBox.Yes | QMessageBox.No,
-                )
-                == QMessageBox.Yes
-            ):
+            box = MessageBox("提示", "识别失败，作为新建文件打开？", self)
+            box.yesButton.setText("是")
+            box.cancelButton.setText("否")
+            if box.exec():
                 self.text_edit.clear()
                 self.text_edit.setReadOnly(False)
                 self.btn_unlock.setEnabled(False)
                 return
         else:
-            QMessageBox.warning(self, "错误", msg)
+            box = MessageBox("错误", msg, self).exec()
+            box.yesButton.setText("是")
+            box.cancelButton.setText("否")
         core.write_log("打开文件", path, f"失败（{msg}）")
+
+    def _err(self, title: str, detail: str):
+        MessageBox(title, detail, self).exec()
+        if self.current_file:
+            core.write_log(title, self.current_file, f"失败（{detail}）")
 
     def _err(self, title: str, detail: str):
         QMessageBox.critical(self, title, detail)

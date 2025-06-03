@@ -6,36 +6,34 @@ from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QWidget,
-    QHBoxLayout,
+    QVBoxLayout,
     QListWidget,
     QListWidgetItem,
     QStackedWidget,
 )
 from PyQt5.QtCore import Qt
-from widget.RoundWidget import RoundWidget
-from widget.FluentListWidget import FluentListWidget
+
+from qfluentwidgets import SegmentedWidget
+
 from pages import *
 
 
-class DataMaskingTab(RoundWidget):
+class DataMaskingTab(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Ping32模拟实现系统 - 文档水印加解密")
         self.setObjectName("DataMaskingTab")
-        self.setBackgroundColor(QColor(250, 250, 250, 200))
-        self.setRadius(10)
-        self.setBorder(QColor(238, 238, 238), 2)
-        self.setContentsMargins(10, 10, 10, 10)
 
-        # 左侧导航列表
-        self.list_widget = FluentListWidget()
-        self.list_widget.setContentsMargins(0, 0, 0, 0)
-        self.list_widget.setFrameShape(FluentListWidget.NoFrame)
+        self.mode = SegmentedWidget(self)
+        self.stack = QStackedWidget(self)
+        self.vBoxLayout = QVBoxLayout(self)
 
-        # 右侧堆栈页面
-        self.stack = QStackedWidget()
+        self.vBoxLayout.setContentsMargins(20, 10, 20, 20)
+        self.vBoxLayout.setSpacing(10)
+        self.vBoxLayout.addWidget(self.mode, 0, Qt.AlignHCenter)
+        self.vBoxLayout.addWidget(self.stack)
 
+        self.setLayout(self.vBoxLayout)
         # 导航项文本列表
         items = [
             {
@@ -75,31 +73,20 @@ class DataMaskingTab(RoundWidget):
                 "widget": CLITab,
             },
         ]
-
-        # 添加导航项及对应页面
+        # 添加页面与标签项
         for item in items:
-            tab = QListWidgetItem(item["title"])
-            # item.setTextAlignment(Qt.AlignCenter)
-            self.list_widget.addItem(tab)
-            # 每个导航项对应一个实例页面
-            self.stack.addWidget(
-                item["widget"](item["title"], item["func_name"], item["script"])
+            page = item["widget"](item["title"], item["func_name"], item["script"])
+            page.setObjectName(item["title"])  # 设置唯一标识
+            self.stack.addWidget(page)
+            self.mode.addItem(
+                routeKey=item["title"],
+                text=item["title"],
+                onClick=lambda _, p=page: self.stack.setCurrentWidget(p),
             )
 
-        # 默认选中第一个
-        self.list_widget.setCurrentRow(0)
-
-        # 连接信号：列表行变化切换堆栈页面
-        self.list_widget.currentRowChanged.connect(self.stack.setCurrentIndex)
-
-        # 整体布局
-        central_widget = QWidget()
-        main_layout = QHBoxLayout(central_widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addWidget(self.list_widget)
-        main_layout.addWidget(self.stack)
-
-        self.setLayout(main_layout)
+        # 初始化状态
+        self.stack.setCurrentIndex(0)
+        self.mode.setCurrentItem(self.stack.currentWidget().objectName())
 
 
 if __name__ == "__main__":

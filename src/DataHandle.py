@@ -1,35 +1,25 @@
-import sys
-import os
-
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QHBoxLayout,
-    QListWidget,
-    QListWidgetItem,
-    QStackedWidget,
-)
+from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 
-from qfluentwidgets import TitleLabel
-
+from qfluentwidgets import SegmentedWidget
 from pages import *
 
 
 class DataHandleTab(QWidget):
-
     def __init__(self):
         super().__init__()
         self.setObjectName("DataHandleTab")
 
-        self.setContentsMargins(10, 10, 10, 10)
-        self.list_widget = QListWidget()
-        # 右侧堆栈页面
-        self.stack = QStackedWidget()
+        self.mode = SegmentedWidget(self)
+        self.stack = QStackedWidget(self)
+        self.vBoxLayout = QVBoxLayout(self)
 
-        # 导航项文本列表
+        self.vBoxLayout.setContentsMargins(20, 10, 20, 20)
+        self.vBoxLayout.setSpacing(10)
+        self.vBoxLayout.addWidget(self.mode, 0, Qt.AlignHCenter)
+        self.vBoxLayout.addWidget(self.stack)
+        self.setLayout(self.vBoxLayout)
+
         items = [
             {
                 "title": "BilndWaterMark",
@@ -37,12 +27,7 @@ class DataHandleTab(QWidget):
                 "script": "",
                 "widget": CLITab,
             },
-            {
-                "title": "Peano",
-                "func_name": "",
-                "script": "",
-                "widget": CLIInputTab,
-            },
+            {"title": "Peano", "func_name": "", "script": "", "widget": CLIInputTab},
             {
                 "title": "SampleScaleDown",
                 "func_name": "",
@@ -55,12 +40,7 @@ class DataHandleTab(QWidget):
                 "script": "",
                 "widget": CLIInputTab,
             },
-            {
-                "title": "Gilbert",
-                "func_name": "",
-                "script": "",
-                "widget": CLITab,
-            },
+            {"title": "Gilbert", "func_name": "", "script": "", "widget": CLITab},
             {
                 "title": "Cloacked-pixel",
                 "func_name": "",
@@ -69,35 +49,26 @@ class DataHandleTab(QWidget):
             },
         ]
 
-        # 添加导航项及对应页面
+        # 添加页面与标签项
         for item in items:
-            tab = QListWidgetItem(item["title"])
-            # item.setTextAlignment(Qt.AlignCenter)
-            self.list_widget.addItem(tab)
-            # 每个导航项对应一个实例页面
-            self.stack.addWidget(
-                item["widget"](item["title"], item["func_name"], item["script"])
+            page = item["widget"](item["title"], item["func_name"], item["script"])
+            page.setObjectName(item["title"])  # 设置唯一标识
+            self.stack.addWidget(page)
+            self.mode.addItem(
+                routeKey=item["title"],
+                text=item["title"],
+                onClick=lambda _, p=page: self.stack.setCurrentWidget(p),
             )
 
-        # 默认选中第一个
-        self.list_widget.setCurrentRow(0)
-
-        # 连接信号：列表行变化切换堆栈页面
-        self.list_widget.currentRowChanged.connect(self.stack.setCurrentIndex)
-
-        # 整体布局
-        central_widget = QWidget()
-        main_layout = QHBoxLayout(central_widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addWidget(self.list_widget)
-        main_layout.addWidget(self.stack)
-
-        self.setLayout(main_layout)
+        # 初始化状态
+        self.stack.setCurrentIndex(0)
+        self.mode.setCurrentItem(self.stack.currentWidget().objectName())
 
 
 if __name__ == "__main__":
     from mod.QSSLoader import QSSLoader
     from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import QApplication, QMainWindow
 
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
     app = QApplication(sys.argv)
