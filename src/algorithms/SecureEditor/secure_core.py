@@ -1,12 +1,23 @@
 from .sm4_cipher import SM4
 from .sm3_cipher import SM3
 from datetime import datetime
+import sys
+import os
 
 IV = b"0123456789012345"
 KEY = b"0123456789012345"
 MAGIC_HEADER = b"NPUSECENC001"
 HASH_SIZE = 32
-LOG_PATH = "./log/secure_editor.log"
+
+if getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+LOG_DIR = os.path.join(BASE_DIR, "log")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOG_PATH = os.path.join(LOG_DIR, "secure_editor.log")
 
 
 def write_log(action: str, filepath: str, result: str):

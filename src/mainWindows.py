@@ -19,8 +19,9 @@ from qfluentwidgets import (
 
 from qframelesswindow.utils import getSystemAccentColor
 
-from DataHandle import DataHandleTab
-from DataMasking import DataMaskingTab
+# from DataHandle import DataHandleTab
+
+# from DataMasking import DataMaskingTab
 from SecureEditor import SecureEditorTab
 
 from mod.Fluent3Icon import Fluent3Icon
@@ -31,21 +32,31 @@ class MainWindow(FluentWindow):
         super().__init__()
 
         self.setWindowTitle("Encryption & Security Platform 32")
-        self.setWindowIcon(QIcon("../res/icons/favicon.png"))
+        import os
+
+        # 获取当前运行路径，无论是.py还是.exe都能适配
+        if getattr(sys, "frozen", False):
+            BASE_DIR = os.path.dirname(sys.executable)
+        else:
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        ICON_PATH = os.path.join(BASE_DIR, "res", "icons", "favicon.png")
+
+        self.setWindowIcon(QIcon(ICON_PATH))
         self.setMinimumSize(900, 600)
         self.navigationInterface.setExpandWidth(200)
 
         # 添加子界面
-        self.data_tab = DataHandleTab()
-        self.masking_tab = DataMaskingTab()
+        # self.data_tab = DataHandleTab()
+        # self.masking_tab = DataMaskingTab()
         self.editor_tab = SecureEditorTab()
 
-        self.addSubInterface(
-            self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
-        )
-        self.addSubInterface(
-            self.masking_tab, Fluent3Icon.fromName("Fingerprint"), "敏感数据识别及脱敏"
-        )
+        # self.addSubInterface(
+        #     self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
+        # )
+        # self.addSubInterface(
+        #     self.masking_tab, Fluent3Icon.fromName("Fingerprint"), "敏感数据识别及脱敏"
+        # )
         self.addSubInterface(
             self.editor_tab, Fluent3Icon.fromName("ProtectedDocument"), "文档透明加密"
         )

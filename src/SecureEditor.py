@@ -16,6 +16,7 @@ from qfluentwidgets import (
     InfoBarIcon,
     FlyoutAnimationType,
     MessageBox,
+    BodyLabel,
 )
 
 import algorithms.SecureEditor.secure_core as core
@@ -27,9 +28,12 @@ class SecureEditorTab(QWidget):
     def __init__(self):
         super().__init__()
         self.setObjectName("SecureEditorTab")
+
         self.TitleLabel = TitleLabel("文档透明加密编辑器")
         self.text_edit = TextEdit(self)
         self.text_edit.setReadOnly(True)
+
+        self.file_label = BodyLabel()
 
         self.commandBar = CommandBar()
         self.commandBar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -67,6 +71,7 @@ class SecureEditorTab(QWidget):
         lay.setContentsMargins(10, 10, 10, 10)
         lay.setAlignment(Qt.AlignTop)
         lay.addWidget(self.TitleLabel)
+        lay.addWidget(self.file_label)
         lay.addWidget(self.commandBar)
         lay.addWidget(self.text_edit, 1)
 
@@ -88,6 +93,7 @@ class SecureEditorTab(QWidget):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 pass  # 创建空文件
+            self.file_label.setText(f"当前文件：{os.path.basename(path)}")
         except Exception as e:
             self._err("新建文件失败", f"无法创建文件：{e}")
             return
@@ -101,15 +107,6 @@ class SecureEditorTab(QWidget):
         self.action_save.setEnabled(True)  # 可保存
         self.action_export.setEnabled(False)  # 导出不可用（没加密文件）
 
-        Flyout.create(
-            icon=InfoBarIcon.SUCCESS,
-            title="新建文件",
-            content=f"文件已创建：{os.path.basename(self.current_file)}",
-            target=self.commandBar,
-            parent=self,
-            isClosable=True,
-            aniType=FlyoutAnimationType.DROP_DOWN,
-        )
         core.write_log("新建文件", path, "成功")
 
     # 下面是已有方法，保持不变
@@ -127,6 +124,8 @@ class SecureEditorTab(QWidget):
             self.text_edit.setPlainText("受控文件已加载，点击“编辑解锁”以查看明文")
             self.text_edit.setReadOnly(True)
             self.action_unlock.setEnabled(True)
+            self.action_save.setEnabled(False)  # 打开时不可保存
+            self.file_label.setText(f"当前文件：{os.path.basename(path)}")
             core.write_log("打开文件", path, "成功")
         except ValueError as ve:
             self._handle_open_error(path, ve)
@@ -179,6 +178,7 @@ class SecureEditorTab(QWidget):
             self.action_unlock.setEnabled(False)
             self.action_save.setEnabled(False)
             self.action_export.setEnabled(False)
+            self.file_label.setText("")
             self.text_edit.clear()
 
             Flyout.create(
@@ -247,29 +247,13 @@ class SecureEditorTab(QWidget):
         core.write_log("打开文件", path, f"失败（{msg}）")
 
     def _err(self, title: str, content: str):
-        Flyout.create(
-            icon=InfoBarIcon.ERROR,
-            title=title,
-            content=content,
-            target=self.commandBar,
-            parent=self,
-            isClosable=True,
-            aniType=FlyoutAnimationType.DROP_DOWN,
-        )
-
-
-if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-    from PyQt5.QtGui import QFont
-
-    app = QApplication(sys.argv)
-    app.setFont(QFont("Microsoft YaHei UI", 12))
-    main_window = QMainWindow()
-    main_window.setWindowTitle("Secure Editor")
-    main_window.setGeometry(100, 100, 800, 600)
-
-    editor_tab = SecureEditorTab()
-    main_window.setCentralWidget(editor_tab)
-
-    main_window.show()
-    sys.exit(app.exec_())
+        # Flyout.create(
+        #     icon=InfoBarIcon.ERROR,
+        #     title=title,
+        #     content=content,
+        #     target=self.commandBar,
+        #     parent=self,
+        #     isClosable=True,
+        #     aniType=FlyoutAnimationType.DROP_DOWN,
+        # )
+        pass

@@ -116,21 +116,3 @@ class CLIInputTab(QWidget):
         except UnicodeDecodeError:
             text = error_data.decode("gbk", errors="replace")
         self.result_display.append(f"错误信息：\n{text}")
-
-
-if __name__ == "__main__":
-    from mod.QSSLoader import QSSLoader
-
-    app = QApplication(sys.argv)
-    app.setFont(QFont("Microsoft YaHei UI", 12))
-    app.setStyleSheet(QSSLoader.load_qss_files("../../style"))
-    main_window = QMainWindow()
-    main_window.setWindowTitle("Data Mining and Attack Detection System")
-    main_window.setGeometry(100, 100, 1650, 1000)
-
-    data_tab = CLIInputTab(script="your_script.py")
-
-    main_window.setCentralWidget(data_tab)
-
-    main_window.show()
-    sys.exit(app.exec_())

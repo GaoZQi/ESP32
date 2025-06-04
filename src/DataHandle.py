@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout
 from PyQt5.QtCore import Qt
 
 from qfluentwidgets import SegmentedWidget
+
 from pages import *
 
 
@@ -63,23 +64,3 @@ class DataHandleTab(QWidget):
         # 初始化状态
         self.stack.setCurrentIndex(0)
         self.mode.setCurrentItem(self.stack.currentWidget().objectName())
-
-
-if __name__ == "__main__":
-    from mod.QSSLoader import QSSLoader
-    from PyQt5.QtGui import QFont
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    app = QApplication(sys.argv)
-    app.setFont(QFont("Microsoft YaHei UI", 12))
-    app.setStyleSheet(QSSLoader.load_qss_files("../style"))
-    main_window = QMainWindow()
-    main_window.setWindowTitle("Data Mining and Attack Detection System")
-    main_window.setGeometry(100, 100, 825, 500)
-
-    data_tab = DataHandleTab()
-    main_window.setCentralWidget(data_tab)
-
-    main_window.show()
-    sys.exit(app.exec_())

@@ -132,18 +132,3 @@ class CLITab(QWidget):
             text = error_data.decode("gbk", errors="replace")
         self.result_display.append(f"错误信息：\n{text}")
 
-
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-    app.setFont(QFont("Microsoft YaHei UI", 12))
-
-    main_window = QMainWindow()
-    main_window.setWindowTitle("Data Mining and Attack Detection System")
-    main_window.setGeometry(100, 100, 1650, 1000)
-
-    data_tab = CLITab()
-    main_window.setCentralWidget(data_tab)
-
-    main_window.show()
-    sys.exit(app.exec_())
