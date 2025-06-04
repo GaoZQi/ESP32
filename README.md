@@ -88,7 +88,7 @@ tab = CLIInputTab(
 --windows-icon-from-ico=<DIR_PATH>/ESP32/src/res/icons/favicon.ico `
 --plugin-enable=pyqt5 `
 --include-package=algorithms.SecureEditor `
---include-package=pages `
+--include-package=template `
 --include-module=mod.Fluent3Icon `
 --include-data-dir=<DIR_PATH>/ESP32/src/mod/font=mod/font `
 --include-data-dir=<DIR_PATH>/ESP32/src/log=log `
