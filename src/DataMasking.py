@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt
 
 from qfluentwidgets import SegmentedWidget
 
-from pages import *
+from template import *
 
 
 class DataMaskingTab(QWidget):

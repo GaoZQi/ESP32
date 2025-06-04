@@ -26,8 +26,18 @@ from qfluentwidgets import (
 
 
 class CLITab(QWidget):
-    def __init__(self, tab_name="Example", algorithm_name="Example", script=""):
+    def __init__(
+        self,
+        tab_name="Example",
+        algorithm_name="Example",
+        encode_func=None,
+        decode_func=None,
+    ):
         super().__init__()
+
+        # 存储传入的函数
+        self.encode_func = encode_func
+        self.decode_func = decode_func
 
         layout = QVBoxLayout()
 
@@ -36,6 +46,7 @@ class CLITab(QWidget):
 
         tip_label = StrongBodyLabel("核心算法：" + algorithm_name)
         layout.addWidget(tip_label)
+
         file_layout = QHBoxLayout()
         # 输入框：日志文件路径
         log_path_input = LineEdit()
@@ -48,19 +59,28 @@ class CLITab(QWidget):
         browse_button.clicked.connect(lambda: self.browse_file(log_path_input))
         file_layout.addWidget(browse_button)
         layout.addLayout(file_layout)
+
         # 开始检测按钮（初始禁用）
         start_button = PrimaryDropDownPushButton("选择操作")
         start_button.setEnabled(False)
+
         # 创建菜单
         menu = RoundMenu(parent=start_button)
-        menu.addAction(Action("加密", triggered=lambda: print("encode")))
-        menu.addAction(Action("解密", triggered=lambda: print("decode")))
+        menu.addAction(
+            Action(
+                "加密",
+                triggered=lambda: self.perform_action("encode", log_path_input.text()),
+            )
+        )
+        menu.addAction(
+            Action(
+                "解密",
+                triggered=lambda: self.perform_action("decode", log_path_input.text()),
+            )
+        )
 
         # 添加菜单
         start_button.setMenu(menu)
-        start_button.clicked.connect(
-            lambda: self.start_detection(script, log_path_input.text())
-        )
         file_layout.addWidget(start_button)
 
         # 显示结果的文本框
@@ -93,42 +113,24 @@ class CLITab(QWidget):
             log_path_input.setText(file_path)
             self.result_display.clear()  # 清空日志
 
-    def start_detection(self, script, log_file_path):
-        if not log_file_path:
+    def perform_action(self, action_type, file_path):
+        if not file_path:
             return
 
         self.result_display.clear()
 
-        process = QProcess(self)
-        process.readyReadStandardOutput.connect(lambda: self.handle_stdout(process))
-        process.readyReadStandardError.connect(lambda: self.handle_stderr(process))
-
-        python_executable = sys.executable
-        if not python_executable:
-            self.result_display.append("Python解释器未找到")
-            return
-
-        abs_script = os.path.abspath(script)
-        self.result_display.append(f"启动脚本: {abs_script}")
-
-        process.start(python_executable, [abs_script])
-
-        process.waitForStarted()
-        process.write(log_file_path.encode() + b"\n")
-
-    def handle_stdout(self, process):
-        data = process.readAllStandardOutput().data()
         try:
-            text = data.decode("utf-8")
-        except UnicodeDecodeError:
-            text = data.decode("gbk", errors="replace")
-        self.result_display.append(text)
-
-    def handle_stderr(self, process):
-        error_data = process.readAllStandardError().data()
-        try:
-            text = error_data.decode("utf-8")
-        except UnicodeDecodeError:
-            text = error_data.decode("gbk", errors="replace")
-        self.result_display.append(f"错误信息：\n{text}")
-
+            if action_type == "encode" and self.encode_func:
+                self.result_display.append("开始加密...")
+                result = self.encode_func(file_path)
+                self.result_display.append("加密完成!")
+                self.result_display.append(f"加密结果: {result}")
+            elif action_type == "decode" and self.decode_func:
+                self.result_display.append("开始解密...")
+                result = self.decode_func(file_path)
+                self.result_display.append("解密完成!")
+                self.result_display.append(f"解密结果: {result}")
+            else:
+                self.result_display.append("错误：未指定有效的处理函数")
+        except Exception as e:
+            self.result_display.append(f"操作过程中发生错误：{str(e)}")

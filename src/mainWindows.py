@@ -4,7 +4,7 @@ import sys
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QApplication
 
 from qfluentwidgets import (
     FluentWindow,
@@ -19,9 +19,8 @@ from qfluentwidgets import (
 
 from qframelesswindow.utils import getSystemAccentColor
 
-# from DataHandle import DataHandleTab
-
-# from DataMasking import DataMaskingTab
+from DataHandle import DataHandleTab
+from DataMasking import DataMaskingTab
 from SecureEditor import SecureEditorTab
 
 from mod.Fluent3Icon import Fluent3Icon
@@ -47,16 +46,16 @@ class MainWindow(FluentWindow):
         self.navigationInterface.setExpandWidth(200)
 
         # 添加子界面
-        # self.data_tab = DataHandleTab()
-        # self.masking_tab = DataMaskingTab()
+        self.data_tab = DataHandleTab()
+        self.masking_tab = DataMaskingTab()
         self.editor_tab = SecureEditorTab()
 
-        # self.addSubInterface(
-        #     self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
-        # )
-        # self.addSubInterface(
-        #     self.masking_tab, Fluent3Icon.fromName("Fingerprint"), "敏感数据识别及脱敏"
-        # )
+        self.addSubInterface(
+            self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
+        )
+        self.addSubInterface(
+            self.masking_tab, Fluent3Icon.fromName("Fingerprint"), "敏感数据识别及脱敏"
+        )
         self.addSubInterface(
             self.editor_tab, Fluent3Icon.fromName("ProtectedDocument"), "文档透明加密"
         )
@@ -72,9 +71,6 @@ class MainWindow(FluentWindow):
         self._themeColorTimer = QTimer(self)
         self._themeColorTimer.timeout.connect(self.checkSystemAccentColor)
         self._themeColorTimer.start(5000)
-
-        # 注册主题色变化的槽函数
-        qconfig.themeColorChanged.connect(self.onThemeColorChanged)
 
     def closeEvent(self, e):
         self.themeListener.terminate()
@@ -97,13 +93,6 @@ class MainWindow(FluentWindow):
             print(f"[系统主题色变化] -> {currentColor.name()}")
             setThemeColor(currentColor, save=False)
             self._lastSystemColor = currentColor
-
-    def onThemeColorChanged(self, color: QColor):
-        """监听主题色变化后执行的操作"""
-        print(f"[监听] 当前主题色已更新为：{color.name()}")
-        # 可以在这里刷新所有依赖主题色的组件，比如按钮样式、背景等
-        # 示例：self.data_tab.updateStyle(color.name()) （你可以定义这个方法）
-        pass
 
 
 if __name__ == "__main__":
