@@ -93,6 +93,7 @@ class SecureEditorTab(QWidget):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 pass  # 创建空文件
+            self.file_label.setTextColor(Qt.black)  # 重置颜色
             self.file_label.setText(f"当前文件：{os.path.basename(path)}")
         except Exception as e:
             self._err("新建文件失败", f"无法创建文件：{e}")
@@ -125,6 +126,7 @@ class SecureEditorTab(QWidget):
             self.text_edit.setReadOnly(True)
             self.action_unlock.setEnabled(True)
             self.action_save.setEnabled(False)  # 打开时不可保存
+            self.file_label.setTextColor(Qt.black)  # 重置颜色
             self.file_label.setText(f"当前文件：{os.path.basename(path)}")
             core.write_log("打开文件", path, "成功")
         except ValueError as ve:
@@ -224,36 +226,15 @@ class SecureEditorTab(QWidget):
 
     def _handle_open_error(self, path: str, ve: ValueError):
         msg = str(ve)
+        self.file_label.setTextColor(Qt.red)
         if "篡改" in msg:
-            Flyout.create(
-                icon=InfoBarIcon.WARNING,
-                title="警告",
-                content=f"{msg}",
-                target=self.commandBar,
-                parent=self,
-                isClosable=True,
-                aniType=FlyoutAnimationType.DROP_DOWN,
-            )
+            self.file_label.setText(f"错误：文件被篡改或格式异常。请检查文件完整性。")
         elif "不是受控文件" in msg:
-            Flyout.create(
-                icon=InfoBarIcon.ERROR,
-                title="错误",
-                content=f"{msg}",
-                target=self.commandBar,
-                parent=self,
-                isClosable=True,
-                aniType=FlyoutAnimationType.DROP_DOWN,
+            self._err(
+                "打开文件失败", "该文件不是受控文件或格式不正确。请检查文件类型。"
             )
         else:
-            Flyout.create(
-                icon=InfoBarIcon.ERROR,
-                title="错误",
-                content=f"{msg}",
-                target=self.commandBar,
-                parent=self,
-                isClosable=True,
-                aniType=FlyoutAnimationType.DROP_DOWN,
-            )
+            self.file_label.setText(f"错误：{msg}")
         core.write_log("打开文件", path, f"失败（{msg}）")
 
     def _open_as_new_file(self):
@@ -263,16 +244,7 @@ class SecureEditorTab(QWidget):
         self.action_save.setEnabled(True)
 
     def _err(self, title: str, content: str):
-        Flyout.create(
-            icon=InfoBarIcon.ERROR,
-            title=title,
-            content=content,
-            target=self.commandBar,
-            parent=self,
-            isClosable=True,
-            aniType=FlyoutAnimationType.DROP_DOWN,
-        )
-        pass
+        self.file_label.setText(f"错误：{content}")
 
 
 if __name__ == "__main__":
