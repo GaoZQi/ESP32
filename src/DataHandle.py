@@ -15,7 +15,7 @@ class DataHandleTab(QWidget):
         self.stack = QStackedWidget(self)
         self.vBoxLayout = QVBoxLayout(self)
 
-        self.vBoxLayout.setContentsMargins(20, 10, 20, 20)
+        self.vBoxLayout.setContentsMargins(20, 20, 20, 20)
         self.vBoxLayout.setSpacing(10)
         self.vBoxLayout.addWidget(self.mode, 0, Qt.AlignHCenter)
         self.vBoxLayout.addWidget(self.stack)
