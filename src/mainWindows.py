@@ -16,6 +16,10 @@ from qfluentwidgets import (
     setTheme,
     Theme,
     qconfig,
+    setCustomStyleSheet,
+    TitleLabel,
+    StrongBodyLabel,
+    BodyLabel,
 )
 
 
@@ -37,7 +41,6 @@ class MainWindow(FluentWindow):
         super().__init__()
 
         self.setWindowTitle("Encryption & Security Platform 32")
-        import os
 
         # 获取当前运行路径，无论是.py还是.exe都能适配
         if getattr(sys, "frozen", False):
@@ -153,7 +156,13 @@ if __name__ == "__main__":
         QWidget {
             font-family: "Microsoft YaHei UI";
         }
-        QLabel {
+        TitleLabel {
+            margin: 5px 0px;
+        }
+        StrongBodyLabel {
+            margin: 5px 0px;
+        }
+        BodyLabel {
             margin: 5px 0px;
         }
         """
