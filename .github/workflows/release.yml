@@ -35,7 +35,7 @@ jobs:
                     --assume-yes-for-downloads `
                     --jobs=12 `
                     --output-dir=output `
-                    --output-filename=ESP32-debug.exe `
+                    --output-filename=ESP32.exe `
                     --windows-icon-from-ico=src/res/icons/favicon.ico `
                     --plugin-enable=pyqt5 `
                     --include-package=algorithms.SecureEditor `
