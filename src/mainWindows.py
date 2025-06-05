@@ -1,9 +1,10 @@
 # coding:utf-8
 
 import sys
+import os
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon, QColor, QFont
 from PyQt5.QtWidgets import QApplication
 
 from qfluentwidgets import (
@@ -108,6 +109,17 @@ if __name__ == "__main__":
         setTheme(Theme.AUTO)
 
     app = QApplication(sys.argv)
+    app.setStyleSheet(
+        """
+        QWidget {
+            font-family: "Microsoft YaHei UI";
+        }
+        """
+    )
+    font = QFont("Microsoft YaHei UI")
+    font.setHintingPreference(QFont.PreferNoHinting)
+    app.setFont(font)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
