@@ -4,23 +4,32 @@ from datetime import datetime
 import sys
 import os
 
+# 常量定义
 IV = b"0123456789012345"
 KEY = b"0123456789012345"
 MAGIC_HEADER = b"NPUSECENC001"
 HASH_SIZE = 32
 
+# 获取基础路径
 if getattr(sys, "frozen", False):
     BASE_DIR = os.path.dirname(sys.executable)
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 日志目录及路径
 LOG_DIR = os.path.join(BASE_DIR, "log")
 os.makedirs(LOG_DIR, exist_ok=True)
-
 LOG_PATH = os.path.join(LOG_DIR, "secure_editor.log")
 
 
 def write_log(action: str, filepath: str, result: str):
+    """
+    写入日志信息到日志文件中
+
+    :param action: 操作名称
+    :param filepath: 操作的文件路径
+    :param result: 操作结果描述
+    """
     with open(LOG_PATH, "a", encoding="utf-8") as f:
         f.write(
             f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {action} | 文件: {filepath} | 结果: {result}\n"
@@ -28,6 +37,13 @@ def write_log(action: str, filepath: str, result: str):
 
 
 def load_file(file_path: str) -> str:
+    """
+    加载并解密受控文件，验证哈希，返回原始文本内容
+
+    :param file_path: 文件路径
+    :return: 解密后的字符串内容
+    :raises ValueError: 文件不是受控文件或被篡改或格式异常
+    """
     with open(file_path, "rb") as f:
         raw = f.read()
 
@@ -62,6 +78,12 @@ def load_file(file_path: str) -> str:
 
 
 def save_file(file_path: str, plaintext: str):
+    """
+    保存明文为受控加密文件，包括加密和哈希校验
+
+    :param file_path: 要保存的目标路径
+    :param plaintext: 要保存的明文内容
+    """
     data = plaintext.encode("utf-8")
     cipher = SM4(iv=IV, key=KEY)
     encrypted = cipher.encrypt(data)
