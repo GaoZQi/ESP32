@@ -68,7 +68,7 @@ class SecureEditorTab(QWidget):
         self.action_export.setEnabled(False)
 
         lay = QVBoxLayout(self)
-        lay.setContentsMargins(10, 10, 10, 10)
+        lay.setContentsMargins(20, 20, 20, 20)
         lay.setAlignment(Qt.AlignTop)
         lay.addWidget(self.TitleLabel)
         lay.addWidget(self.file_label)

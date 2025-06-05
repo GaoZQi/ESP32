@@ -40,6 +40,7 @@ class CLITab(QWidget):
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
 
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)

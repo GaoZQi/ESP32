@@ -30,6 +30,7 @@ class CLIInputTab(QWidget):
         self.process_func = process_func
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
 
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)

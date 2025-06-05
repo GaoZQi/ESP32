@@ -1,9 +1,10 @@
 # coding:utf-8
 
 import sys
+import os
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtCore import Qt, QTimer, QSize, QEventLoop
+from PyQt5.QtGui import QIcon, QColor, QFont
 from PyQt5.QtWidgets import QApplication
 
 from qfluentwidgets import (
@@ -17,11 +18,16 @@ from qfluentwidgets import (
     qconfig,
 )
 
+
+from qfluentwidgets import SplashScreen
+from qframelesswindow import FramelessWindow, StandardTitleBar
+
 from qframelesswindow.utils import getSystemAccentColor
 
 from DataHandle import DataHandleTab
 from DataMasking import DataMaskingTab
 from SecureEditor import SecureEditorTab
+from HomePage import HomePage
 
 from mod.Fluent3Icon import Fluent3Icon
 
@@ -46,10 +52,12 @@ class MainWindow(FluentWindow):
         self.navigationInterface.setExpandWidth(200)
 
         # 添加子界面
+        self.home_tab = HomePage()
         self.data_tab = DataHandleTab()
         self.masking_tab = DataMaskingTab()
         self.editor_tab = SecureEditorTab()
 
+        self.addSubInterface(self.home_tab, FluentIcon.HOME, "首页")
         self.addSubInterface(
             self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
         )
@@ -95,6 +103,38 @@ class MainWindow(FluentWindow):
             self._lastSystemColor = currentColor
 
 
+class StartView(FramelessWindow):
+
+    def __init__(self):
+        super().__init__()
+        self.resize(700, 600)
+        self.setWindowTitle("Encryption & Security Platform 32")
+        # 获取当前运行路径，无论是.py还是.exe都能适配
+        if getattr(sys, "frozen", False):
+            BASE_DIR = os.path.dirname(sys.executable)
+        else:
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        ICON_PATH = os.path.join(BASE_DIR, "res", "icons", "title.png")
+
+        self.setWindowIcon(QIcon(ICON_PATH))
+
+        # 1. 创建启动页面
+        self.setFixedSize(600, 327)
+        self.splashScreen = SplashScreen(self.windowIcon(), self)
+        self.splashScreen.setIconSize(QSize(512, 112))
+        self.splashScreen.show()
+
+        # 启动定时器，等待一段时间后关闭启动界面并打开主窗口
+        QTimer.singleShot(3, self.showMainWindow)
+
+    def showMainWindow(self):
+        """关闭启动界面并显示主窗口"""
+        self.mainWindow = MainWindow()
+        self.mainWindow.show()
+        self.close()
+
+
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
@@ -108,6 +148,23 @@ if __name__ == "__main__":
         setTheme(Theme.AUTO)
 
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
+    app.setStyleSheet(
+        """
+        QWidget {
+            font-family: "Microsoft YaHei UI";
+        }
+        QLabel {
+            margin: 5px 0px;
+        }
+        """
+    )
+    font = QFont("Microsoft YaHei UI")
+    font.setHintingPreference(QFont.PreferNoHinting)
+    app.setFont(font)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+    # 创建并显示启动界面
+    start = StartView()
+    start.show()
+
     sys.exit(app.exec_())
