@@ -44,8 +44,8 @@ jobs:
                     --include-data-dir=src/mod/font=mod/font `
                     --include-data-dir=src/log=log `
                     --include-data-dir=src/res=res `
+                    --windows-console-mode=disable `
                     src/mainWindows.py
-                    --windows-console-mode=disable
 
             - name: Upload to GitHub Release
               uses: softprops/action-gh-release@v2
