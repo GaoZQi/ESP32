@@ -35,7 +35,7 @@ jobs:
                     --assume-yes-for-downloads `
                     --jobs=12 `
                     --output-dir=output `
-                    --output-filename=ESP32.exe `  # 修改输出文件名以匹配后续步骤
+                    --output-filename=ESP32.exe `
                     --windows-icon-from-ico=src/res/icons/favicon.ico `
                     --plugin-enable=pyqt5 `
                     --include-package=algorithms.SecureEditor `
@@ -53,5 +53,3 @@ jobs:
                   files: output/ESP32.exe
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              permissions:  # 添加权限声明
-                contents: write
