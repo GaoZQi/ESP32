@@ -10,6 +10,6 @@ wheels/
 .venv
 
 .history
-log
+src/log/secure_editor.log
 /src/output/mainWindows.build
 /src/output/mainWindows.dist
