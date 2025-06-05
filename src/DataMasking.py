@@ -17,6 +17,8 @@ from qfluentwidgets import SegmentedWidget
 
 from template import *
 
+from algorithms.SensitiveData import data_desensitization ,Sensitive_Data_Recognition
+
 
 class DataMaskingTab(QWidget):
 
@@ -37,47 +39,24 @@ class DataMaskingTab(QWidget):
         # 导航项文本列表
         items = [
             {
-                "title": "BilndWaterMark",
-                "func_name": "",
-                "script": "",
-                "widget": CLITab,
-            },
+                "title": "Sensitive_Data_Recognition",
+                "func_name": "敏感数据检测",
+                "script": Sensitive_Data_Recognition.run_from_path,
+                "widget": CLI_Sensitive_Data_Recognition_Tab,
+            }, 
             {
-                "title": "Peano",
-                "func_name": "",
-                "script": "",
-                "widget": CLIInputTab,
-            },
-            {
-                "title": "SampleScaleDown",
-                "func_name": "",
-                "script": "",
-                "widget": CLITab,
-            },
-            {
-                "title": "Novel_To_Image",
-                "func_name": "",
-                "script": "",
-                "widget": CLIInputTab,
-            },
-            {
-                "title": "Gilbert",
-                "func_name": "",
-                "script": "",
-                "widget": CLITab,
-            },
-            {
-                "title": "Cloacked-pixel",
-                "func_name": "",
-                "script": "",
-                "widget": CLITab,
+                "title": "Data_Desensitization",
+                "func_name": "数据脱敏",
+                "script": data_desensitization.run_from_path,
+                "widget": CLI_Data_Desensitization_Tab,
             },
         ]
         # 添加页面与标签项
         for item in items:
             page = item["widget"](item["title"], item["func_name"], item["script"])
-            page.setObjectName(item["title"])  # 设置唯一标识
+            page.setObjectName(item["title"])
             self.stack.addWidget(page)
+
             self.mode.addItem(
                 routeKey=item["title"],
                 text=item["title"],

@@ -5,3 +5,5 @@ from .CLImode import CLI3Tab
 from .CLImode import CLITEXT2Tab
 from .CLImode import CLITEXTTab
 from .CLImodeInput import CLIInputTab
+from .CLI_Data_Desensitization_Tab import CLI_Data_Desensitization_Tab
+from template.CLI_Sensitive_Data_Recognition_Tab import CLI_Sensitive_Data_Recognition_Tab

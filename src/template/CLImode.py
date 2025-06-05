@@ -722,3 +722,5 @@ class CLITEXT2Tab(QWidget):
                 self.result_display.append("错误：未指定有效的处理函数")
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
+
+
