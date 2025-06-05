@@ -25,12 +25,6 @@ jobs:
                   pip install -r requirements.txt
                   pip install nuitka
 
-            - name: Ensure required directories exist
-              run: |
-                  if not exist src\log mkdir src\log
-                  if not exist src\res mkdir src\res
-                  if not exist src\mod\font mkdir src\mod\font
-
             - name: Build with Nuitka
               run: |
                   python -m nuitka `
