@@ -165,3 +165,23 @@ PyQt5 项目通常需要启用此插件，以确保 PyQt5 的功能能够正常�
 ```powershell
 --output-dir=<DIR_PATH>/ESP32/src/output
 ```
+
+## Github Actions CI/CD
+
+使用 GitHub Actions 进行 CI/CD，可以在代码提交时自动运行测试和打包。
+
+### 触发规则
+
+release: 推送包含 version 标签的提交时触发。
+
+debug: 每次提交时触发。
+
+两个工作流均可手动触发。
+
+### 添加依赖库
+
+如果在开发过程中需要添加新的依赖库，请确保在`requirements.txt`文件中添加相应的库。
+
+### 可执行文件下载
+
+在打包完成后，可以将生成的可执行文件上传到 GitHub Releases 页面，供用户下载。
