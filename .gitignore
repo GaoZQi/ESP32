@@ -11,3 +11,5 @@ wheels/
 
 .history
 log
+/src/output/mainWindows.build
+/src/output/mainWindows.dist
