@@ -136,6 +136,7 @@ class CLITab(QWidget):
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
 
+
 class CLI1Tab(QWidget):
     def __init__(
         self,
@@ -151,7 +152,7 @@ class CLI1Tab(QWidget):
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(0, 0, 0, 0)
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)
 
@@ -246,6 +247,7 @@ class CLI1Tab(QWidget):
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
 
+
 class CLI2Tab(QWidget):
     def __init__(
         self,
@@ -261,7 +263,7 @@ class CLI2Tab(QWidget):
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(0, 0, 0, 0)
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)
 
@@ -300,13 +302,17 @@ class CLI2Tab(QWidget):
         menu.addAction(
             Action(
                 "加密",
-                triggered=lambda: self.perform_action("encode", log_path_input.text(), file_input2.text()),
+                triggered=lambda: self.perform_action(
+                    "encode", log_path_input.text(), file_input2.text()
+                ),
             )
         )
         menu.addAction(
             Action(
                 "解密",
-                triggered=lambda: self.perform_action("decode", log_path_input.text(), file_input2.text()),
+                triggered=lambda: self.perform_action(
+                    "decode", log_path_input.text(), file_input2.text()
+                ),
             )
         )
 
@@ -367,7 +373,8 @@ class CLI2Tab(QWidget):
                 self.result_display.append("错误：未指定有效的处理函数")
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
-            
+
+
 class CLI3Tab(QWidget):
     def __init__(
         self,
@@ -383,7 +390,7 @@ class CLI3Tab(QWidget):
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(0, 0, 0, 0)
         title_label = TitleLabel(tab_name)
         layout.addWidget(title_label)
 
@@ -412,7 +419,7 @@ class CLI3Tab(QWidget):
         file_layout2.addWidget(file_input2)
         file_layout2.addWidget(browse_button2)
         layout.addLayout(file_layout2)
-        
+
         file_layout3 = QHBoxLayout()
         file_input3 = LineEdit()
         file_input3.setPlaceholderText("请输入解密图片路径")
@@ -422,7 +429,7 @@ class CLI3Tab(QWidget):
         file_layout3.addWidget(file_input3)
         file_layout3.addWidget(browse_button3)
         layout.addLayout(file_layout3)
-        
+
         self.text_input = LineEdit()
         self.text_input.setPlaceholderText("请输入维度权重信息")
         layout.addWidget(self.text_input)
@@ -436,13 +443,19 @@ class CLI3Tab(QWidget):
         menu.addAction(
             Action(
                 "加密",
-                triggered=lambda: self.perform_action("encode", log_path_input.text(), file_input2.text()),
+                triggered=lambda: self.perform_action(
+                    "encode", log_path_input.text(), file_input2.text()
+                ),
             )
         )
         menu.addAction(
             Action(
                 "解密",
-                triggered=lambda: self.perform_action(action_type="decode", origion_file=file_input3.text(), text_input=self.text_input.text())
+                triggered=lambda: self.perform_action(
+                    action_type="decode",
+                    origion_file=file_input3.text(),
+                    text_input=self.text_input.text(),
+                ),
             )
         )
 
@@ -470,7 +483,9 @@ class CLI3Tab(QWidget):
 
     def check_start_button(self):
         """检查是否启用开始检测按钮"""
-        if (self.log_path_input.text() and self.file_input2.text()) or (self.file_input3.text() and self.text_input.text()):
+        if (self.log_path_input.text() and self.file_input2.text()) or (
+            self.file_input3.text() and self.text_input.text()
+        ):
             self.start_button.setEnabled(True)
         else:
             self.start_button.setEnabled(False)
@@ -484,7 +499,7 @@ class CLI3Tab(QWidget):
             log_path_input.setText(file_path)
             self.result_display.clear()  # 清空日志
 
-    def perform_action(self, action_type, origion_file, hide_file = '', text_input = ''):
+    def perform_action(self, action_type, origion_file, hide_file="", text_input=""):
 
         self.result_display.clear()
 
@@ -504,16 +519,23 @@ class CLI3Tab(QWidget):
                 self.result_display.append("错误：未指定有效的处理函数")
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
-            
+
+
 class CLITEXTTab(QWidget):
-    def __init__(self, tab_name="Example", algorithm_name="Example", encode_func=None, decode_func=None):
+    def __init__(
+        self,
+        tab_name="Example",
+        algorithm_name="Example",
+        encode_func=None,
+        decode_func=None,
+    ):
         super().__init__()
 
         self.encode_func = encode_func
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(TitleLabel(tab_name))
         layout.addWidget(StrongBodyLabel("核心算法：" + algorithm_name))
 
@@ -539,8 +561,20 @@ class CLITEXTTab(QWidget):
         self.file_input.textChanged.connect(self.check_start_button)
 
         menu = RoundMenu(parent=self.start_button)
-        menu.addAction(Action("加密", triggered=lambda: self.perform_action("encode", self.text_input.text())))
-        menu.addAction(Action("解密", triggered=lambda: self.perform_action("decode", file=self.file_input.text())))
+        menu.addAction(
+            Action(
+                "加密",
+                triggered=lambda: self.perform_action("encode", self.text_input.text()),
+            )
+        )
+        menu.addAction(
+            Action(
+                "解密",
+                triggered=lambda: self.perform_action(
+                    "decode", file=self.file_input.text()
+                ),
+            )
+        )
         self.start_button.setMenu(menu)
 
         self.result_display = TextEdit()
@@ -554,7 +588,7 @@ class CLITEXTTab(QWidget):
             self.start_button.setEnabled(True)
         else:
             self.start_button.setEnabled(False)
-            
+
     def browse_file(self, log_path_input):
         """打开文件对话框选择日志文件"""
         file_path, _ = QFileDialog.getOpenFileName(
@@ -564,7 +598,7 @@ class CLITEXTTab(QWidget):
             log_path_input.setText(file_path)
             self.result_display.clear()  # 清空日志
 
-    def perform_action(self, action_type, text = '', file = None):
+    def perform_action(self, action_type, text="", file=None):
         self.result_display.clear()
         try:
             if action_type == "encode" and self.encode_func:
@@ -582,22 +616,29 @@ class CLITEXTTab(QWidget):
         except Exception as e:
             self.result_display.append(f"操作过程中发生错误：{str(e)}")
 
+
 class CLITEXT2Tab(QWidget):
-    def __init__(self, tab_name="Example", algorithm_name="Example", encode_func=None, decode_func=None):
+    def __init__(
+        self,
+        tab_name="Example",
+        algorithm_name="Example",
+        encode_func=None,
+        decode_func=None,
+    ):
         super().__init__()
 
         self.encode_func = encode_func
         self.decode_func = decode_func
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(TitleLabel(tab_name))
         layout.addWidget(StrongBodyLabel("核心算法：" + algorithm_name))
 
         self.text_input = LineEdit()
         self.text_input.setPlaceholderText("请输入隐藏信息")
         layout.addWidget(self.text_input)
-        
+
         self.text_input1 = LineEdit()
         self.text_input1.setPlaceholderText("请输入密码")
         layout.addWidget(self.text_input1)
@@ -620,8 +661,27 @@ class CLITEXT2Tab(QWidget):
         self.file_input.textChanged.connect(self.check_start_button)
 
         menu = RoundMenu(parent=self.start_button)
-        menu.addAction(Action("加密", triggered=lambda: self.perform_action("encode", secret=self.text_input.text(), password=self.text_input1.text(), file=self.file_input.text())))
-        menu.addAction(Action("解密", triggered=lambda: self.perform_action("decode", password=self.text_input1.text(), file=self.file_input.text())))
+        menu.addAction(
+            Action(
+                "加密",
+                triggered=lambda: self.perform_action(
+                    "encode",
+                    secret=self.text_input.text(),
+                    password=self.text_input1.text(),
+                    file=self.file_input.text(),
+                ),
+            )
+        )
+        menu.addAction(
+            Action(
+                "解密",
+                triggered=lambda: self.perform_action(
+                    "decode",
+                    password=self.text_input1.text(),
+                    file=self.file_input.text(),
+                ),
+            )
+        )
         self.start_button.setMenu(menu)
 
         self.result_display = TextEdit()
@@ -635,7 +695,7 @@ class CLITEXT2Tab(QWidget):
             self.start_button.setEnabled(True)
         else:
             self.start_button.setEnabled(False)
-            
+
     def browse_file(self, log_path_input):
         """打开文件对话框选择日志文件"""
         file_path, _ = QFileDialog.getOpenFileName(
@@ -645,7 +705,7 @@ class CLITEXT2Tab(QWidget):
             log_path_input.setText(file_path)
             self.result_display.clear()  # 清空日志
 
-    def perform_action(self, action_type, secret = '', password = '',file = None):
+    def perform_action(self, action_type, secret="", password="", file=None):
         self.result_display.clear()
         try:
             if action_type == "encode" and self.encode_func:
