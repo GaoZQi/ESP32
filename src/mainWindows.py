@@ -162,7 +162,14 @@ if __name__ == "__main__":
     font.setHintingPreference(QFont.PreferNoHinting)
     app.setFont(font)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    # 在入口文件顶部添加
+    if getattr(sys, "frozen", False):
+        APP_BASE_DIR = os.path.dirname(sys.executable)
+    else:
+        APP_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+    # 设置全局环境变量（可选方案）
+    os.environ["APP_BASE_DIR"] = APP_BASE_DIR
     # 创建并显示启动界面
     start = StartView()
     start.show()
