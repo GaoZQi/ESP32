@@ -57,10 +57,12 @@ class HomePage(QWidget):
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
         ICON_PATH = os.path.join(BASE_DIR, "res", "icons", "favicon.png")
+        BLUE_PATH = os.path.join(BASE_DIR, "res", "pic", "blue.png")
+        GRE_PATH = os.path.join(BASE_DIR, "res", "pic", "green.png")
 
         emojiCard1 = EmojiCard(ICON_PATH, "文档水印加解密")
-        emojiCard2 = EmojiCard(ICON_PATH, "敏感数据识别及脱敏")
-        emojiCard3 = EmojiCard(ICON_PATH, "文档透明加密")
+        emojiCard2 = EmojiCard(BLUE_PATH, "敏感数据识别及脱敏")
+        emojiCard3 = EmojiCard(GRE_PATH, "文档透明加密")
 
         mainLayout.addWidget(title)
         mainLayout.addWidget(subtitle1)

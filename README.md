@@ -92,7 +92,7 @@ tab = CLIInputTab(
 --include-module=mod.Fluent3Icon `
 --include-data-dir=<DIR_PATH>/ESP32/src/mod/font=mod/font `
 --include-data-dir=<DIR_PATH>/ESP32/src/log=log `
---include-data-dir=<DIR_PATH>/ESP32/src/res/icons=res/icons `
+--include-data-dir=<DIR_PATH>/ESP32/src/res/=res `
 ```
 
 其中`<PYHTON_PATH>`为 Python 安装路径，`<DIR_PATH>`为 ESP32 项目根目录。

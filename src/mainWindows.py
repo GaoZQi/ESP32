@@ -115,7 +115,7 @@ class StartView(FramelessWindow):
         else:
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        ICON_PATH = os.path.join(BASE_DIR, "res", "icons", "title.png")
+        ICON_PATH = os.path.join(BASE_DIR, "res", "pic", "title.png")
 
         self.setWindowIcon(QIcon(ICON_PATH))
 
