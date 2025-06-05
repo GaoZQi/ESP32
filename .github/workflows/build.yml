@@ -1,8 +1,10 @@
-name: Build with Nuitka
+name: Build ESP32 EXE
 
 on:
     push:
         branches: [main]
+        tags:
+            - "debug"
     workflow_dispatch:
 
 jobs:
