@@ -85,7 +85,7 @@ class EmojiCard(ElevatedCardWidget):
         self.iconWidget = ImageLabel(iconPath, self)
         self.label = CaptionLabel(name, self)
 
-        self.iconWidget.scaledToHeight(68)
+        self.iconWidget.scaledToHeight(110)
 
         self.vBoxLayout = QVBoxLayout(self)
         self.vBoxLayout.setAlignment(Qt.AlignCenter)
