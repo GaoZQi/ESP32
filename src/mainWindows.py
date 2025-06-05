@@ -27,6 +27,7 @@ from qframelesswindow.utils import getSystemAccentColor
 from DataHandle import DataHandleTab
 from DataMasking import DataMaskingTab
 from SecureEditor import SecureEditorTab
+from HomePage import HomePage
 
 from mod.Fluent3Icon import Fluent3Icon
 
@@ -51,10 +52,12 @@ class MainWindow(FluentWindow):
         self.navigationInterface.setExpandWidth(200)
 
         # 添加子界面
+        self.home_tab = HomePage()
         self.data_tab = DataHandleTab()
         self.masking_tab = DataMaskingTab()
         self.editor_tab = SecureEditorTab()
 
+        self.addSubInterface(self.home_tab, FluentIcon.HOME, "首页")
         self.addSubInterface(
             self.data_tab, Fluent3Icon.fromName("PrintfaxPrinterFile"), "文档水印加解密"
         )
@@ -123,7 +126,7 @@ class StartView(FramelessWindow):
         self.splashScreen.show()
 
         # 启动定时器，等待一段时间后关闭启动界面并打开主窗口
-        QTimer.singleShot(3000, self.showMainWindow)
+        QTimer.singleShot(3, self.showMainWindow)
 
     def showMainWindow(self):
         """关闭启动界面并显示主窗口"""
@@ -149,6 +152,9 @@ if __name__ == "__main__":
         """
         QWidget {
             font-family: "Microsoft YaHei UI";
+        }
+        QLabel {
+            margin: 5px 0px;
         }
         """
     )
