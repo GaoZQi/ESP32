@@ -56,9 +56,9 @@ class HomePage(QWidget):
         else:
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        RED_PATH = os.path.join(BASE_DIR, "res", "pic", "red.png")
-        BLU_PATH = os.path.join(BASE_DIR, "res", "pic", "blue.png")
-        GRE_PATH = os.path.join(BASE_DIR, "res", "pic", "green.png")
+        RED_PATH = os.path.join(BASE_DIR, "res", "pic", "file.png")
+        BLU_PATH = os.path.join(BASE_DIR, "res", "pic", "card.png")
+        GRE_PATH = os.path.join(BASE_DIR, "res", "pic", "chat.png")
 
         emojiCard1 = EmojiCard(RED_PATH, "文档水印加解密")
         emojiCard2 = EmojiCard(BLU_PATH, "敏感数据识别及脱敏")
