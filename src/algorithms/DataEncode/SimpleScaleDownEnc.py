@@ -26,7 +26,7 @@ class SimpleScaleDownEncoder:
         return dst_im
 
     def encode(self, big_path, small_path):
-        output_path = 'output/DataEncode/' + random_string(8) + '.png'
+        output_path = random_string(8) + '.png'
 
         big_img = Image.open(big_path)
         small_img = Image.open(small_path)

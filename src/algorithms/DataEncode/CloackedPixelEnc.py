@@ -56,7 +56,7 @@ class CloackedPixelEncoder:
         img_file = img_file
         data = payload.encode()
         password = password
-        out_file = 'output/DataEncode/' + random_string(8) + '.png'
+        out_file = random_string(8) + '.png'
 
         img = Image.open(img_file).convert("RGBA")
         width, height = img.size

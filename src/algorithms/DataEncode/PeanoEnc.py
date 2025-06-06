@@ -149,7 +149,7 @@ class PeanoQRGenerator:
 
 class PeanoEncoderAdapter:
     def encode(self, text):
-        output_path = 'output/DataEncode/' + random_string(8) + '.png'
+        output_path = random_string(8) + '.png'
         qr = PeanoQRGenerator(
             data=text,
             size=729,

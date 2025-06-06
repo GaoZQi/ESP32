@@ -67,7 +67,7 @@ class PeanoDecoderAdapter:
     def decode(self, path):
         input_path = path
         print(input_path)
-        output_path = 'output/DataEncode/' + input_path.split('/')[-1].replace('.png', '_restore.png')
+        output_path = input_path.split('/')[-1].replace('.png', '_restore.png')
 
         restorer = PeanoQRRestorer(image_path=input_path, peano_order=6)
         restorer.restore(save_path=output_path)

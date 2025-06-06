@@ -11,7 +11,7 @@ class NovelToImageEncoder:
 
     def encode(self, text):
         # filename = input("Enter text file path: ").strip()
-        output_path = 'output/DataEncode/' + random_string(8) + '.bmp'
+        output_path = random_string(8) + '.bmp'
 
         # try:
         #     # 优先尝试 utf-8 编码读取文本

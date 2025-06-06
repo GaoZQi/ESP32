@@ -69,7 +69,7 @@ class GilbertDecoder:
 
     def decode(self, file):
         input_path = file
-        output_path = 'output/DataEncode/' + input_path.split('/')[-1].split('.')[0] + '_decoded.png'
+        output_path = input_path.split('/')[-1].split('.')[0] + '_decoded.png'
         try:
             img = Image.open(input_path)
         except Exception as e:

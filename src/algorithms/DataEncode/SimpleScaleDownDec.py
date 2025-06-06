@@ -11,7 +11,7 @@ class SimpleScaleDownDecoder:
 
     def decode(self, img_path, dims):
         big_path = img_path
-        output_path = 'output/DataEncode/' + random_string(8) + '.png'
+        output_path = random_string(8) + '.png'
 
         try:
             dims = dims.strip().split(' ')

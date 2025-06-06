@@ -72,7 +72,7 @@ class BlindWatermarkDecoder:
 
 class DecoderAdapter:
     def decode(self, origin_file, hide_file):
-        out_path = 'output/DataEncode/' + origin_file.split('/')[-1]
+        out_path = origin_file.split('/')[-1]
         decoder = BlindWatermarkDecoder()
         decoder.decode(origin_file, hide_file, out_path)
 

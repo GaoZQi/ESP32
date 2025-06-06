@@ -71,7 +71,7 @@ class GilbertEncoder:
 
     def encode(self, file):
         input_path = file
-        output_path = 'output/DataEncode/' + random_string(8) + '.png'
+        output_path = random_string(8) + '.png'
 
         try:
             img = Image.open(input_path)

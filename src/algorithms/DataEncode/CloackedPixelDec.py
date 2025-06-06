@@ -46,7 +46,7 @@ class CloackedPixelDecoder:
 
     def decode(self, password, in_file):
         # in_file = input("Enter stego image path: ").strip()
-        out_file = 'output/DataEncode/' + in_file.split(in_file)[-1].split('.')[0] + '.png'
+        out_file = in_file.split(in_file)[-1].split('.')[0] + '.png'
         # password = input("Enter password: ").strip()
 
         img = Image.open(in_file).convert("RGBA")
